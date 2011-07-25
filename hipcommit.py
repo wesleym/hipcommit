@@ -48,6 +48,6 @@ while True:
         bamkey = bamdoc.firstChild.firstChild.firstChild.attributes['key'].nodeValue
         bamlink = bamdoc.firstChild.firstChild.firstChild.firstChild.attributes['href'].nodeValue
         messsage = "Build {} is {}<br>See {}".format(bamkey, bamstate, bamlink)
-        urllib.request.urlopen(constants.template4.format(urllib.request.pathname2url(messsage)))
+        urllib.request.urlopen(constants.template3.format(urllib.request.pathname2url(messsage)))
     lastpoll = thispoll
     time.sleep(60)
