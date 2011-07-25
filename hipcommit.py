@@ -4,11 +4,19 @@ import datetime
 import time
 import urllib.request
 import xml.dom.minidom
+import html
 
 import constants
 
 lastpoll = datetime.datetime.utcnow()
 print(lastpoll)
+
+def send_room_message(message):
+    print("Sending message to room {}:".format(constants.ROOM_ID))
+    print(message)
+    html_encoded_message = html.escape(message).replace('\n', '<br>')
+    url_encoded_message = urllib.request.pathname2url(html_encoded_message)
+    urllib.request.urlopen(constants.template3.format(constants.HIPCHAT_NOTIFICATION_TOKEN, constants.ROOM_ID, url_encoded_message))
 
 while True:
     thispoll = datetime.datetime.utcnow()
@@ -28,14 +36,13 @@ while True:
         csidd = pppp.attributes['csid'].nodeValue
         authorr = pppp.attributes['author'].nodeValue
         commentt = pppp.getElementsByTagName('comment')[0].firstChild.nodeValue
-        commentt = commentt.replace('\n', '<br>')
         try:
             authorr = constants.author_by_email[authorr]
         except KeyError:
             # Leave the author as an email address
             pass
-        mesage = "Commit {} by {}:<br><br>{}".format(csidd, constants.author_by_email[authorr], commentt)
-        print(mesage)
+        mesage = "Commit {} by {}:\n\n{}".format(csidd, authorr, commentt)
+        send_room_message(mesage)
         urllib.request.urlopen(constants.template3.format(urllib.request.pathname2url(mesage)))
     osahu = urllib.request.HTTPBasicAuthHandler()
     osahu.add_password('protected-area', constants.urii, constants.usernamee, constants.passy)
@@ -48,6 +55,6 @@ while True:
         bamkey = bamdoc.firstChild.firstChild.firstChild.attributes['key'].nodeValue
         bamlink = bamdoc.firstChild.firstChild.firstChild.firstChild.attributes['href'].nodeValue
         messsage = "Build {} is {}<br>See {}".format(bamkey, bamstate, bamlink)
-        urllib.request.urlopen(constants.template3.format(urllib.request.pathname2url(messsage)))
+        send_room_message(messsage)
     lastpoll = thispoll
     time.sleep(60)
