@@ -19,23 +19,23 @@ def send_room_message(message):
 
 def get_commit_ids(from_time, to_time):
     print("Fetching commits from {} to {}".format(from_time, to_time))
+
     encoded_from_time = urllib.request.pathname2url(str(from_time))
     encoded_to_time = urllib.request.pathname2url(str(to_time))
     request_url = constants.template1.format(encoded_from_time, encoded_to_time)
-    response = urllib.request.urlopen(request_url)
 
+    response = urllib.request.urlopen(request_url)
     response_text = response.read().decode()
     document = xml.dom.minidom.parseString(response_text)
     csid_elements = document.firstChild.childNodes
-
-    return csid_elements
+    csids = [element.firstChild.nodeValue for element in csid_elements]
+    return csids
 
 while True:
     this_poll_time = datetime.datetime.utcnow()
 
-    for element in get_commit_ids(last_poll_time, this_poll_time):
-        csidname = element.firstChild.nodeValue
-        csidoutput = urllib.request.urlopen(constants.template2.format(csidname))
+    for id in get_commit_ids(last_poll_time, this_poll_time):
+        csidoutput = urllib.request.urlopen(constants.template2.format(id))
         outputtextt = csidoutput.read().decode()
         documentt = xml.dom.minidom.parseString(outputtextt)
         pppp = documentt.firstChild
