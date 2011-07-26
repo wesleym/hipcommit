@@ -57,7 +57,6 @@ while True:
             pass
         mesage = "Commit {csid} by {author}:\n\n{comment}".format(**details)
         send_room_message(mesage)
-        urllib.request.urlopen(constants.template3.format(urllib.request.pathname2url(mesage)))
     osahu = urllib.request.HTTPBasicAuthHandler()
     osahu.add_password('protected-area', constants.urii, constants.usernamee, constants.passy)
     osahu = urllib.request.build_opener(osahu)
