@@ -8,8 +8,8 @@ import html
 
 import constants
 
-lastpoll = datetime.datetime.utcnow()
-print(lastpoll)
+last_poll_time = datetime.datetime.utcnow()
+print(last_poll_time)
 
 def send_room_message(message):
     print("Sending message to room {}:".format(constants.ROOM_ID))
@@ -18,16 +18,23 @@ def send_room_message(message):
     url_encoded_message = urllib.request.pathname2url(html_encoded_message)
     urllib.request.urlopen(constants.template3.format(constants.HIPCHAT_NOTIFICATION_TOKEN, constants.ROOM_ID, url_encoded_message))
 
+def get_commit_ids(from_time, to_time):
+    encoded_from_time = urllib.request.pathname2url(str(from_time))
+    encoded_to_time = urllib.request.pathname2url(str(to_time))
+    request_url = constants.template1.format(encoded_from_time, encoded_to_time)
+    response = urllib.request.urlopen(request_url)
+
+    response_text = response.read().decode()
+    document = xml.dom.minidom.parseString(response_text)
+    csid_elements = document.firstChild.childNodes
+
+    return csid_elements
+
 while True:
-    thispoll = datetime.datetime.utcnow()
-    print(thispoll)
+    this_poll_time = datetime.datetime.utcnow()
+    print(this_poll_time)
 
-    output = urllib.request.urlopen(constants.template1.format(urllib.request.pathname2url(str(lastpoll)), urllib.request.pathname2url(str(thispoll))))
-
-    outputtext = output.read().decode()
-    document = xml.dom.minidom.parseString(outputtext)
-    elements = document.firstChild.childNodes
-    for element in elements:
+    for element in get_commit_ids(last_poll_time, this_poll_time):
         csidname = element.firstChild.nodeValue
         csidoutput = urllib.request.urlopen(constants.template2.format(csidname))
         outputtextt = csidoutput.read().decode()
@@ -56,5 +63,5 @@ while True:
         bamlink = bamdoc.firstChild.firstChild.firstChild.firstChild.attributes['href'].nodeValue
         messsage = "Build {} is {}<br>See {}".format(bamkey, bamstate, bamlink)
         send_room_message(messsage)
-    lastpoll = thispoll
+    last_poll_time = this_poll_time
     time.sleep(60)
