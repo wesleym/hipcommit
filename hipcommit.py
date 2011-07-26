@@ -11,6 +11,7 @@ import constants
 last_poll_time = datetime.datetime.utcnow()
 
 def send_room_message(message):
+    """Send a notification message to the predetermined room on HipChat."""
     print("Sending message to room {}:".format(constants.ROOM_ID))
     print(message)
     html_encoded_message = html.escape(message).replace('\n', '<br>')
@@ -18,6 +19,7 @@ def send_room_message(message):
     urllib.request.urlopen(constants.template3.format(constants.HIPCHAT_NOTIFICATION_TOKEN, constants.ROOM_ID, url_encoded_message))
 
 def get_commit_ids(from_time, to_time):
+    """Fetch the commits from from_time to to_time and return a list of changeset IDs."""
     print("Fetching commits from {} to {}".format(from_time, to_time))
 
     encoded_from_time = urllib.request.pathname2url(str(from_time))
@@ -32,6 +34,13 @@ def get_commit_ids(from_time, to_time):
     return changeset_ids
 
 def get_commit_details(id):
+    """Fetch the details for the specified commit and return a dict of its details.
+
+    The resulting dict will have the following keys:
+        * changeset_id: The ID of the changeset
+        * author: The author's email address
+        * comment: The commit message
+    """
     request_url = constants.template2.format(id)
     response = urllib.request.urlopen(request_url)
     response_text = response.read().decode()
