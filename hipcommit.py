@@ -27,9 +27,9 @@ def get_commit_ids(from_time, to_time):
     response = urllib.request.urlopen(request_url)
     response_text = response.read().decode()
     document = xml.dom.minidom.parseString(response_text)
-    csid_elements = document.firstChild.childNodes
-    csids = [element.firstChild.nodeValue for element in csid_elements]
-    return csids
+    changeset_id_elements = document.firstChild.childNodes
+    changeset_ids = [element.firstChild.nodeValue for element in changeset_id_elements]
+    return changeset_ids
 
 def get_commit_details(id):
     request_url = constants.template2.format(id)
@@ -39,7 +39,7 @@ def get_commit_details(id):
 
     details = {}
     changeset_element = document.firstChild
-    details['csid'] = changeset_element.attributes['csid'].nodeValue
+    details['changeset_id'] = changeset_element.attributes['changeset_id'].nodeValue
     details['author'] = changeset_element.attributes['author'].nodeValue
     details['comment'] = changeset_element.getElementsByTagName('comment')[0].firstChild.nodeValue
     return details
@@ -55,7 +55,7 @@ while True:
         except KeyError:
             # Leave the author as an email address
             pass
-        mesage = "Commit {csid} by {author}:\n\n{comment}".format(**details)
+        mesage = "Commit {changeset_id} by {author}:\n\n{comment}".format(**details)
         send_room_message(mesage)
     osahu = urllib.request.HTTPBasicAuthHandler()
     osahu.add_password('protected-area', constants.urii, constants.usernamee, constants.passy)
