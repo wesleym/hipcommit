@@ -17,7 +17,8 @@ def send_room_message(message):
     logging.info(message)
     html_encoded_message = html.escape(message).replace('\n', '<br>')
     url_encoded_message = urllib.request.pathname2url(html_encoded_message)
-    urllib.request.urlopen(constants.template3.format(constants.HIPCHAT_NOTIFICATION_TOKEN, constants.ROOM_ID, url_encoded_message))
+    request_url = constants.template3.format(constants.HIPCHAT_NOTIFICATION_TOKEN, constants.ROOM_ID, url_encoded_message)
+    urllib.request.urlopen(request_url)
 
 def get_commit_ids(from_time, to_time):
     """Fetch the commits from from_time to to_time and return a list of changeset IDs."""
@@ -56,7 +57,6 @@ def get_commit_details(id):
 
 while True:
     this_poll_time = datetime.datetime.utcnow()
-
     for id in get_commit_ids(last_poll_time, this_poll_time):
         details = get_commit_details(id)
         # Try to convert author into HipChat username format
@@ -67,10 +67,11 @@ while True:
             pass
         mesage = "Commit {changeset_id} by {author}:\n\n{comment}".format(**details)
         send_room_message(mesage)
-    osahu = urllib.request.HTTPBasicAuthHandler()
-    osahu.add_password('protected-area', constants.urii, constants.usernamee, constants.passy)
-    osahu = urllib.request.build_opener(osahu)
-    bamdoc = osahu.open(constants.template5).read().decode()
+
+    auth_handler = urllib.request.HTTPBasicAuthHandler()
+    auth_handler.add_password('protected-area', constants.urii, constants.usernamee, constants.passy)
+    opener = urllib.request.build_opener(auth_handler)
+    bamdoc = opener.open(constants.template5).read().decode()
     bamdoc = xml.dom.minidom.parseString(bamdoc)
     bamstate = bamdoc.firstChild.firstChild.firstChild.attributes['state'].nodeValue
     bamstate = bamstate
