@@ -15,6 +15,7 @@ About the name
 --------------
 
 It's temporary. Other ideas were worse:
+
 * HipEye
 * HipFish
 * CommitBot
