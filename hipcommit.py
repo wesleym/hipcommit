@@ -31,23 +31,31 @@ def get_commit_ids(from_time, to_time):
     csids = [element.firstChild.nodeValue for element in csid_elements]
     return csids
 
+def get_commit_details(id):
+    request_url = constants.template2.format(id)
+    response = urllib.request.urlopen(request_url)
+    response_text = response.read().decode()
+    document = xml.dom.minidom.parseString(response_text)
+
+    details = {}
+    changeset_element = document.firstChild
+    details['csid'] = changeset_element.attributes['csid'].nodeValue
+    details['author'] = changeset_element.attributes['author'].nodeValue
+    details['comment'] = changeset_element.getElementsByTagName('comment')[0].firstChild.nodeValue
+    return details
+
 while True:
     this_poll_time = datetime.datetime.utcnow()
 
     for id in get_commit_ids(last_poll_time, this_poll_time):
-        csidoutput = urllib.request.urlopen(constants.template2.format(id))
-        outputtextt = csidoutput.read().decode()
-        documentt = xml.dom.minidom.parseString(outputtextt)
-        pppp = documentt.firstChild
-        csidd = pppp.attributes['csid'].nodeValue
-        authorr = pppp.attributes['author'].nodeValue
-        commentt = pppp.getElementsByTagName('comment')[0].firstChild.nodeValue
+        details = get_commit_details(id)
+        # Try to convert author into HipChat username format
         try:
-            authorr = constants.author_by_email[authorr]
+            details['author'] = constants.author_by_email[details['author']]
         except KeyError:
             # Leave the author as an email address
             pass
-        mesage = "Commit {} by {}:\n\n{}".format(csidd, authorr, commentt)
+        mesage = "Commit {csid} by {author}:\n\n{comment}".format(**details)
         send_room_message(mesage)
         urllib.request.urlopen(constants.template3.format(urllib.request.pathname2url(mesage)))
     osahu = urllib.request.HTTPBasicAuthHandler()
