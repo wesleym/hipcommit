@@ -5,6 +5,7 @@ import time
 import urllib.request
 import xml.dom.minidom
 import html
+import logging
 
 import constants
 
@@ -12,15 +13,15 @@ last_poll_time = datetime.datetime.utcnow()
 
 def send_room_message(message):
     """Send a notification message to the predetermined room on HipChat."""
-    print("Sending message to room {}:".format(constants.ROOM_ID))
-    print(message)
+    logging.info("Sending message to room {}:".format(constants.ROOM_ID))
+    logging.info(message)
     html_encoded_message = html.escape(message).replace('\n', '<br>')
     url_encoded_message = urllib.request.pathname2url(html_encoded_message)
     urllib.request.urlopen(constants.template3.format(constants.HIPCHAT_NOTIFICATION_TOKEN, constants.ROOM_ID, url_encoded_message))
 
 def get_commit_ids(from_time, to_time):
     """Fetch the commits from from_time to to_time and return a list of changeset IDs."""
-    print("Fetching commits from {} to {}".format(from_time, to_time))
+    logging.info("Fetching commits from {} to {}".format(from_time, to_time))
 
     encoded_from_time = urllib.request.pathname2url(str(from_time))
     encoded_to_time = urllib.request.pathname2url(str(to_time))
