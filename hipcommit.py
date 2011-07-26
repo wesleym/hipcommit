@@ -9,7 +9,6 @@ import html
 import constants
 
 last_poll_time = datetime.datetime.utcnow()
-print(last_poll_time)
 
 def send_room_message(message):
     print("Sending message to room {}:".format(constants.ROOM_ID))
@@ -19,6 +18,7 @@ def send_room_message(message):
     urllib.request.urlopen(constants.template3.format(constants.HIPCHAT_NOTIFICATION_TOKEN, constants.ROOM_ID, url_encoded_message))
 
 def get_commit_ids(from_time, to_time):
+    print("Fetching commits from {} to {}".format(from_time, to_time))
     encoded_from_time = urllib.request.pathname2url(str(from_time))
     encoded_to_time = urllib.request.pathname2url(str(to_time))
     request_url = constants.template1.format(encoded_from_time, encoded_to_time)
@@ -32,7 +32,6 @@ def get_commit_ids(from_time, to_time):
 
 while True:
     this_poll_time = datetime.datetime.utcnow()
-    print(this_poll_time)
 
     for element in get_commit_ids(last_poll_time, this_poll_time):
         csidname = element.firstChild.nodeValue
@@ -63,5 +62,6 @@ while True:
         bamlink = bamdoc.firstChild.firstChild.firstChild.firstChild.attributes['href'].nodeValue
         messsage = "Build {} is {}<br>See {}".format(bamkey, bamstate, bamlink)
         send_room_message(messsage)
+
     last_poll_time = this_poll_time
     time.sleep(60)
