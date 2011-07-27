@@ -6,10 +6,16 @@ import urllib.request
 import xml.dom.minidom
 import html
 import logging
+import configparser
 
 import constants
 
+config = configparser.ConfigParser()
+config.read('config.ini')
+
 last_poll_time = datetime.datetime.utcnow()
+
+message_url = 'https://api.hipchat.com/v1/rooms/message?auth_token={}&room_id={}&from={}&message={}'
 
 def send_room_message(message):
     """Send a notification message to the predetermined room on HipChat."""
@@ -17,7 +23,7 @@ def send_room_message(message):
     logging.info(message)
     html_encoded_message = html.escape(message).replace('\n', '<br>')
     url_encoded_message = urllib.request.pathname2url(html_encoded_message)
-    request_url = constants.template3.format(constants.HIPCHAT_NOTIFICATION_TOKEN, constants.ROOM_ID, url_encoded_message)
+    request_url = message_url.format(config['hipchat']['notification_token'], config['hipchat']['room_id'], config['hipchat']['name'], url_encoded_message)
     urllib.request.urlopen(request_url)
 
 def get_commit_ids(from_time, to_time):
