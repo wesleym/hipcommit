@@ -15,7 +15,8 @@ config.read('config.ini')
 
 last_poll_time = datetime.datetime.utcnow()
 
-message_url = 'https://api.hipchat.com/v1/rooms/message?auth_token={}&room_id={}&from={}&message={}'
+message_url = ('https://api.hipchat.com/v1/rooms/message'
+               '?auth_token={}&room_id={}&from={}&message={}')
 
 def send_room_message(message):
     """Send a notification message to the predetermined room on HipChat."""
@@ -23,7 +24,10 @@ def send_room_message(message):
     logging.info(message)
     html_encoded_message = html.escape(message).replace('\n', '<br>')
     url_encoded_message = urllib.request.pathname2url(html_encoded_message)
-    request_url = message_url.format(config['hipchat']['notification_token'], config['hipchat']['room_id'], config['hipchat']['name'], url_encoded_message)
+    request_url = message_url.format(config['hipchat']['notification_token'],
+                                     config['hipchat']['room_id'],
+                                     config['hipchat']['name'],
+                                     url_encoded_message)
     urllib.request.urlopen(request_url)
 
 def get_commit_ids(from_time, to_time):
@@ -66,16 +70,19 @@ while True:
     for id in get_commit_ids(last_poll_time, this_poll_time):
         details = get_commit_details(id)
         # Try to convert author into HipChat username format
-        try:
-            details['author'] = constants.author_by_email[details['author']]
-        except KeyError:
-            # Leave the author as an email address
-            pass
+#        try:
+#            details['author'] = constants.author_by_email[details['author']]
+#        except KeyError:
+#            # Leave the author as an email address
+#            pass
         mesage = "Commit {changeset_id} by {author}:\n\n{comment}".format(**details)
         send_room_message(mesage)
 
     auth_handler = urllib.request.HTTPBasicAuthHandler()
-    auth_handler.add_password('protected-area', constants.urii, constants.usernamee, constants.passy)
+    auth_handler.add_password('protected-area',
+                              constants.urii,
+                              config['atlassian']['username'],
+                              config['atlassian']['password'])
     opener = urllib.request.build_opener(auth_handler)
     bamdoc = opener.open(constants.template5).read().decode()
     bamdoc = xml.dom.minidom.parseString(bamdoc)
