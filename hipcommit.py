@@ -26,8 +26,7 @@ def send_room_message(message):
     """Send a notification message to the predetermined room on HipChat."""
     logging.info("Sending message to room {}:".format(config['hipchat']['room_id']))
     logging.info(message)
-    newlined_message = message.replace('\n', '<br>')
-    url_encoded_message = urllib.request.pathname2url(newlined_message)
+    url_encoded_message = urllib.request.pathname2url(message)
     request_url = message_url.format(config['hipchat']['notification_token'],
                                      config['hipchat']['room_id'],
                                      urllib.request.pathname2url(config['hipchat']['name']),
@@ -84,7 +83,7 @@ while True:
         except KeyError:
             # Leave the author as an email address
             pass
-        mesage = '<a href="https://sencha.jira.com/source/changelog/EXTGWT?cs={changeset_id}">Commit {changeset_id}</a> by {author}:\n\n{comment}'.format(**details)
+        mesage = '<a href="https://sencha.jira.com/source/changelog/EXTGWT?cs={changeset_id}">Commit {changeset_id}</a> by {author}:<br><br>{comment}'.format(**details)
         send_room_message(mesage)
 
     auth_handler = urllib.request.HTTPBasicAuthHandler()
