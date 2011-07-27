@@ -17,6 +17,8 @@ last_poll_time = datetime.datetime.utcnow()
 
 message_url = ('https://api.hipchat.com/v1/rooms/message'
                '?auth_token={}&room_id={}&from={}&message={}')
+changeset_list_url = 'https://{}/source/rest-service-fe/revisionData-v1/changesetList/EXTGWT?FEAUTH={}&path=%2F&start={}&end={}&maxReturn=10'
+changeset_url = 'https://{}/source/rest-service-fe/revisionData-v1/changeset/EXTGWT/{}?FEAUTH={}'
 
 def send_room_message(message):
     """Send a notification message to the predetermined room on HipChat."""
@@ -36,7 +38,10 @@ def get_commit_ids(from_time, to_time):
 
     encoded_from_time = urllib.request.pathname2url(str(from_time))
     encoded_to_time = urllib.request.pathname2url(str(to_time))
-    request_url = constants.template1.format(encoded_from_time, encoded_to_time)
+    request_url = changeset_list_url.format(config['atlassian']['host'],
+                                            config['atlassian']['auth_token'],
+                                            encoded_from_time,
+                                            encoded_to_time)
 
     response = urllib.request.urlopen(request_url)
     response_text = response.read().decode()
@@ -53,7 +58,9 @@ def get_commit_details(id):
         * author: The author's email address
         * comment: The commit message
     """
-    request_url = constants.template2.format(id)
+    request_url = changeset_url.format(config['atlassian']['host'],
+                                       id,
+                                       config['atlassian']['auth_token'])
     response = urllib.request.urlopen(request_url)
     response_text = response.read().decode()
     document = xml.dom.minidom.parseString(response_text)
