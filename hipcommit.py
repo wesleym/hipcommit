@@ -30,7 +30,7 @@ def send_room_message(message):
     url_encoded_message = urllib.request.pathname2url(html_encoded_message)
     request_url = message_url.format(config['hipchat']['notification_token'],
                                      config['hipchat']['room_id'],
-                                     config['hipchat']['name'],
+                                     urllib.request.pathname2url(config['hipchat']['name']),
                                      url_encoded_message)
     urllib.request.urlopen(request_url)
 
