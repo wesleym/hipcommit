@@ -22,7 +22,7 @@ changeset_url = 'https://{}/source/rest-service-fe/revisionData-v1/changeset/EXT
 
 def send_room_message(message):
     """Send a notification message to the predetermined room on HipChat."""
-    logging.info("Sending message to room {}:".format(constants.ROOM_ID))
+    logging.info("Sending message to room {}:".format(config['hipchat']['room_id']))
     logging.info(message)
     html_encoded_message = html.escape(message).replace('\n', '<br>')
     url_encoded_message = urllib.request.pathname2url(html_encoded_message)
