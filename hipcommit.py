@@ -69,7 +69,7 @@ def get_commit_details(id):
 
     details = {}
     changeset_element = document.firstChild
-    details['changeset_id'] = changeset_element.attributes['changeset_id'].nodeValue
+    details['changeset_id'] = changeset_element.attributes['csid'].nodeValue
     details['author'] = changeset_element.attributes['author'].nodeValue
     details['comment'] = changeset_element.getElementsByTagName('comment')[0].firstChild.nodeValue
     return details
