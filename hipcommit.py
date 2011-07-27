@@ -8,8 +8,6 @@ import html
 import logging
 import configparser
 
-import constants
-
 config = configparser.ConfigParser()
 config.read('config.ini')
 
@@ -19,6 +17,10 @@ message_url = ('https://api.hipchat.com/v1/rooms/message'
                '?auth_token={}&room_id={}&from={}&message={}')
 changeset_list_url = 'https://{}/source/rest-service-fe/revisionData-v1/changesetList/EXTGWT?FEAUTH={}&path=%2F&start={}&end={}&maxReturn=10'
 changeset_url = 'https://{}/source/rest-service-fe/revisionData-v1/changeset/EXTGWT/{}?FEAUTH={}'
+
+urii = 'https://sencha.jira.com/builds'
+
+template5 = 'https://sencha.jira.com/builds/rest/api/latest/result/EXTGWT?os_authType=basic'
 
 def send_room_message(message):
     """Send a notification message to the predetermined room on HipChat."""
@@ -87,11 +89,11 @@ while True:
 
     auth_handler = urllib.request.HTTPBasicAuthHandler()
     auth_handler.add_password('protected-area',
-                              constants.urii,
+                              urii,
                               config['atlassian']['username'],
                               config['atlassian']['password'])
     opener = urllib.request.build_opener(auth_handler)
-    bamdoc = opener.open(constants.template5).read().decode()
+    bamdoc = opener.open(template5).read().decode()
     bamdoc = xml.dom.minidom.parseString(bamdoc)
     bamstate = bamdoc.firstChild.firstChild.firstChild.attributes['state'].nodeValue
     bamstate = bamstate
