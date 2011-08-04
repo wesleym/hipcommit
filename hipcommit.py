@@ -79,12 +79,6 @@ while True:
     this_poll_time = datetime.datetime.utcnow()
     for id in get_commit_ids(last_poll_time, this_poll_time):
         details = get_commit_details(id)
-        # Try to convert author into HipChat username format
-        try:
-            details['author'] = config['authors'][details['author']]
-        except KeyError:
-            # Leave the author as an email address
-            pass
         mesage = '<a href="https://sencha.jira.com/source/changelog/EXTGWT?cs={changeset_id}">Commit {changeset_id}</a> by {author}:<br><br>{comment}'.format(**details)
         send_room_message(mesage)
 
