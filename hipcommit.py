@@ -22,6 +22,8 @@ urii = 'https://sencha.jira.com/builds'
 
 template5 = 'https://sencha.jira.com/builds/rest/api/latest/result/EXTGWT?os_authType=basic'
 
+last_broken_build = None
+
 def send_room_message(message):
     """Send a notification message to the predetermined room on HipChat."""
     logging.info("Sending message to room {}:".format(config['hipchat']['room_id']))
@@ -98,9 +100,11 @@ while True:
     bamstate = bamstate
     if bamstate != 'Successful':
         bamkey = bamdoc.firstChild.firstChild.firstChild.attributes['key'].nodeValue
-        bamlink = bamdoc.firstChild.firstChild.firstChild.firstChild.attributes['href'].nodeValue
-        messsage = "Build {} is {}<br>See {}".format(bamkey, bamstate, bamlink)
-        send_room_message(messsage)
+        if bamkey != last_broken_build
+            last_broken_build = bamkey
+            bamlink = bamdoc.firstChild.firstChild.firstChild.firstChild.attributes['href'].nodeValue
+            messsage = 'Build <a href="{}">{}</a> is {}'.format(bamlink, bamkey, bamstate)
+            send_room_message(messsage)
 
     last_poll_time = this_poll_time
     time.sleep(60)
