@@ -1,12 +1,12 @@
 #!/usr/bin/env python3.2
 
 import datetime
-import time
-import urllib.request
-import xml.dom.minidom
-import html
-import logging
 import configparser
+import logging
+import html
+import xml.dom.minidom
+import urllib.request
+import urllib.parse
 
 config = configparser.ConfigParser()
 config.read('config.ini')
