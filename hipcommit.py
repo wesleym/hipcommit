@@ -31,10 +31,10 @@ def send_room_message(message):
     """Send a notification message to the predetermined room on HipChat."""
     logging.info("Sending message to room {}:".format(config['hipchat']['room_id']))
     logging.info(message)
-    url_encoded_message = urllib.request.pathname2url(message)
+    url_encoded_message = urllib.parse.quote(message)
     request_url = message_url.format(config['hipchat']['notification_token'],
                                      config['hipchat']['room_id'],
-                                     urllib.request.pathname2url(config['hipchat']['name']),
+                                     urllib.parse.quote(config['hipchat']['name']),
                                      url_encoded_message)
     urllib.request.urlopen(request_url)
 
@@ -42,8 +42,8 @@ def get_commit_ids(from_time, to_time):
     """Fetch the commits from from_time to to_time and return a list of changeset IDs."""
     logging.info("Fetching commits from {} to {}".format(from_time, to_time))
 
-    encoded_from_time = urllib.request.pathname2url(str(from_time))
-    encoded_to_time = urllib.request.pathname2url(str(to_time))
+    encoded_from_time = urllib.parse.quote(str(from_time))
+    encoded_to_time = urllib.parse.quote(str(to_time))
     request_url = changeset_list_url.format(config['atlassian']['host'],
                                             config['atlassian']['auth_token'],
                                             encoded_from_time,
