@@ -8,6 +8,8 @@ import xml.dom.minidom
 import urllib.request
 import urllib.parse
 
+logging.basicConfig(filename='hipcommit.log', level=logging.DEBUG)
+
 config = configparser.ConfigParser()
 config.read('config.ini')
 
