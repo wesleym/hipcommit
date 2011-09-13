@@ -82,35 +82,38 @@ def get_commit_details(id):
     details['comment'] = changeset_element.getElementsByTagName('comment')[0].firstChild.nodeValue
     return details
 
+def poll():
+    this_poll_time = datetime.datetime.utcnow()
+    for id in get_commit_ids(last_poll_time, this_poll_time):
+        details = get_commit_details(id)
+        mesage = '<a href="https://sencha.jira.com/source/changelog/EXTGWT?cs={changeset_id}">Commit {changeset_id}</a> by {author}:<br><br>{comment}'.format(**details)
+        send_room_message(mesage)
+
+    auth_handler = urllib.request.HTTPBasicAuthHandler()
+    auth_handler.add_password('protected-area',
+                              urii,
+                              config['atlassian']['username'],
+                              config['atlassian']['password'])
+    opener = urllib.request.build_opener(auth_handler)
+    bamdoc = opener.open(template5).read().decode()
+    logging.debug("Bamdoc follows")
+    logging.debug(bamdoc)
+    bamdoc = xml.dom.minidom.parseString(bamdoc)
+    bamstate = bamdoc.firstChild.firstChild.firstChild.attributes['state'].nodeValue
+    bamstate = bamstate
+    if bamstate != 'Successful':
+        bamkey = bamdoc.firstChild.firstChild.firstChild.attributes['key'].nodeValue
+        if bamkey != last_broken_build:
+            last_broken_build = bamkey
+            bamlink = bamdoc.firstChild.firstChild.firstChild.firstChild.attributes['href'].nodeValue
+            messsage = 'Build <a href="{}">{}</a> is {}'.format(bamlink, bamkey, bamstate)
+            send_room_message(messsage)
+
+    last_poll_time = this_poll_time
+
 while True:
     try:
-        this_poll_time = datetime.datetime.utcnow()
-        for id in get_commit_ids(last_poll_time, this_poll_time):
-            details = get_commit_details(id)
-            mesage = '<a href="https://sencha.jira.com/source/changelog/EXTGWT?cs={changeset_id}">Commit {changeset_id}</a> by {author}:<br><br>{comment}'.format(**details)
-            send_room_message(mesage)
-
-        auth_handler = urllib.request.HTTPBasicAuthHandler()
-        auth_handler.add_password('protected-area',
-                                  urii,
-                                  config['atlassian']['username'],
-                                  config['atlassian']['password'])
-        opener = urllib.request.build_opener(auth_handler)
-        bamdoc = opener.open(template5).read().decode()
-        logging.debug("Bamdoc follows")
-        logging.debug(bamdoc)
-        bamdoc = xml.dom.minidom.parseString(bamdoc)
-        bamstate = bamdoc.firstChild.firstChild.firstChild.attributes['state'].nodeValue
-        bamstate = bamstate
-        if bamstate != 'Successful':
-            bamkey = bamdoc.firstChild.firstChild.firstChild.attributes['key'].nodeValue
-            if bamkey != last_broken_build:
-                last_broken_build = bamkey
-                bamlink = bamdoc.firstChild.firstChild.firstChild.firstChild.attributes['href'].nodeValue
-                messsage = 'Build <a href="{}">{}</a> is {}'.format(bamlink, bamkey, bamstate)
-                send_room_message(messsage)
-
-        last_poll_time = this_poll_time
-        time.sleep(60)
+        poll()
     except urllib.error.URLError:
-        continue
+        pass
+    time.sleep(60)
