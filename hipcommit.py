@@ -29,11 +29,12 @@ last_broken_build = None
 
 def send_room_message(message):
     """Send a notification message to the predetermined room on HipChat."""
-    logging.info("Sending message to room {}:".format(config['hipchat']['room_id']))
+    room_id = config['hipchat']['room_id']
+    logging.info("Sending message to room {}:".format(room_id))
     logging.info(message)
     url_encoded_message = urllib.parse.quote(message)
     request_url = message_url.format(config['hipchat']['notification_token'],
-                                     config['hipchat']['room_id'],
+                                     room_id,
                                      urllib.parse.quote(config['hipchat']['name']),
                                      url_encoded_message)
     urllib.request.urlopen(request_url)
