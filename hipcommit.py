@@ -83,11 +83,18 @@ def get_commit_details(id):
     details['comment'] = changeset_element.getElementsByTagName('comment')[0].firstChild.nodeValue
     return details
 
+commit_message_template = ('<a href="https://sencha.jira.com/source/changelog/'
+                           '{project}?cs={changeset_id}">Commit {changeset_id}'
+                           '</a> by {author}:<br><br>{comment}')
+def format_commit_message(details):
+    project = config['atlassian']['project']
+    return commit_message_template.format(project=project, **details)
+
 def poll(last_poll_time, this_poll_time):
     for id in get_commit_ids(last_poll_time, this_poll_time):
         details = get_commit_details(id)
-        mesage = '<a href="https://sencha.jira.com/source/changelog/EXTGWT?cs={changeset_id}">Commit {changeset_id}</a> by {author}:<br><br>{comment}'.format(**details)
-        send_room_message(mesage)
+        message = format_commit_message(details)
+        send_room_message(message)
 
     auth_handler = urllib.request.HTTPBasicAuthHandler()
     auth_handler.add_password('protected-area',
