@@ -83,8 +83,7 @@ def get_commit_details(id):
     details['comment'] = changeset_element.getElementsByTagName('comment')[0].firstChild.nodeValue
     return details
 
-def poll():
-    this_poll_time = datetime.datetime.utcnow()
+def poll(last_poll_time, this_poll_time):
     for id in get_commit_ids(last_poll_time, this_poll_time):
         details = get_commit_details(id)
         mesage = '<a href="https://sencha.jira.com/source/changelog/EXTGWT?cs={changeset_id}">Commit {changeset_id}</a> by {author}:<br><br>{comment}'.format(**details)
@@ -110,11 +109,11 @@ def poll():
             messsage = 'Build <a href="{}">{}</a> is {}'.format(bamlink, bamkey, bamstate)
             send_room_message(messsage)
 
-    last_poll_time = this_poll_time
-
 while True:
     try:
-        poll()
+        this_poll_time = datetime.datetime.utcnow()
+        poll(last_poll_time, this_poll_time)
+        last_poll_time = this_poll_time
     except urllib.error.URLError:
         pass
     time.sleep(60)
