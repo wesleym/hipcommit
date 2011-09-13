@@ -109,11 +109,15 @@ def poll(last_poll_time, this_poll_time):
             messsage = 'Build <a href="{}">{}</a> is {}'.format(bamlink, bamkey, bamstate)
             send_room_message(messsage)
 
-while True:
-    try:
-        this_poll_time = datetime.datetime.utcnow()
-        poll(last_poll_time, this_poll_time)
-        last_poll_time = this_poll_time
-    except urllib.error.URLError:
-        pass
-    time.sleep(60)
+def start_polling():
+    while True:
+        try:
+            this_poll_time = datetime.datetime.utcnow()
+            poll(last_poll_time, this_poll_time)
+            last_poll_time = this_poll_time
+        except urllib.error.URLError:
+            pass
+        time.sleep(60)
+
+if __name__ == '__main__':
+    start_polling()
