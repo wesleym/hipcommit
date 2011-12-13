@@ -51,6 +51,8 @@ def get_commit_ids(from_time, to_time):
 
     response = urllib.request.urlopen(request_url)
     response_text = response.read().decode()
+    logging.debug("Commits from {} to {}".format(from_time, to_time))
+    logging.debug(response_text)
     document = xml.dom.minidom.parseString(response_text)
     changeset_id_elements = document.firstChild.childNodes
     changeset_ids = [element.firstChild.nodeValue for element in changeset_id_elements]
@@ -69,6 +71,8 @@ def get_commit_details(id):
                                        config['atlassian']['auth_token'])
     response = urllib.request.urlopen(request_url)
     response_text = response.read().decode()
+    logging.debug("Commits for {}".format(id))
+    logging.debug(response_text)
     document = xml.dom.minidom.parseString(response_text)
 
     details = {}
@@ -93,6 +97,8 @@ while True:
                                   config['atlassian']['password'])
         opener = urllib.request.build_opener(auth_handler)
         bamdoc = opener.open(template5).read().decode()
+        logging.debug("Bamdoc follows")
+        logging.debug(bamdoc)
         bamdoc = xml.dom.minidom.parseString(bamdoc)
         bamstate = bamdoc.firstChild.firstChild.firstChild.attributes['state'].nodeValue
         bamstate = bamstate
