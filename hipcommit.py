@@ -85,14 +85,14 @@ def get_commit_details(id):
 commit_message_template = ('<a href="https://sencha.jira.com/source/changelog/'
                            '{project}?cs={changeset_id}">Commit {changeset_id}'
                            '</a> by {author}:<br><br>{comment}')
-def format_commit_message(details):
+def format_commit_message(changeset_id, author, comment):
     project = config['atlassian']['project']
-    return commit_message_template.format(project=project, **details)
+    return commit_message_template.format(project=project, changeset_id=changeset_id, author=author, comment=comment)
 
 def poll(last_poll_time, this_poll_time):
     for id in get_commit_ids(last_poll_time, this_poll_time):
         details = get_commit_details(id)
-        message = format_commit_message(details)
+        message = format_commit_message(details['changeset_id'], details['author'], details['comment'])
         send_room_message(message)
 
     auth_handler = urllib.request.HTTPBasicAuthHandler()
