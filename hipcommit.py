@@ -121,8 +121,8 @@ def start_polling():
             this_poll_time = datetime.datetime.utcnow()
             poll(last_poll_time, this_poll_time)
             last_poll_time = this_poll_time
-        except urllib.error.URLError:
-            pass
+        except urllib.error.URLError as error:
+            logging.error(error)
         time.sleep(60)
 
 if __name__ == '__main__':
