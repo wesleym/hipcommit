@@ -4,7 +4,6 @@ import datetime
 import configparser
 import time
 import logging
-import html
 import xml.dom.minidom
 import urllib.request
 import urllib.parse
