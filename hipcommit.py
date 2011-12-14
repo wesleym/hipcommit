@@ -118,6 +118,7 @@ def poll(last_poll_time, this_poll_time):
 def start_polling():
     while True:
         try:
+            last_poll_time = datetime.datetime.utcnow()
             this_poll_time = datetime.datetime.utcnow()
             poll(last_poll_time, this_poll_time)
             last_poll_time = this_poll_time
