@@ -9,6 +9,9 @@ import urllib.request
 import urllib.parse
 
 logging.basicConfig(filename='hipcommit.log', level=logging.DEBUG)
+console = logging.StreamHandler()
+console.setLevel(logging.DEBUG)
+logging.getLogger('').addHandler(console)
 
 config = configparser.ConfigParser()
 config.read('config.ini')
