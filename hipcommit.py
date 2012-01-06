@@ -31,7 +31,7 @@ last_broken_build = None
 
 def send_room_message(message):
     """Send a notification message to the predetermined room on HipChat."""
-    logging.info("Sending message to room {}:".format(config['hipchat']['room_id']))
+    logging.info("Sending message to room %s:", config['hipchat']['room_id'])
     logging.info(message)
     url_encoded_message = urllib.parse.quote(message)
     request_url = message_url.format(config['hipchat']['notification_token'],
@@ -45,7 +45,7 @@ def get_commit_ids(from_time, to_time):
     # Overlap previous fetch interval by thirty seconds
     from_time = from_time - datetime.timedelta(seconds=30)
 
-    logging.info("Fetching commits from {} to {}".format(from_time, to_time))
+    logging.info("Fetching commits from %s to %s", from_time, to_time)
 
     encoded_from_time = urllib.parse.quote(str(from_time))
     encoded_to_time = urllib.parse.quote(str(to_time))
@@ -56,7 +56,7 @@ def get_commit_ids(from_time, to_time):
 
     response = urllib.request.urlopen(request_url)
     response_text = response.read().decode()
-    logging.debug("Commits from {} to {}".format(from_time, to_time))
+    logging.debug("Commits from %s to %s" from_time, to_time)
     logging.debug(response_text)
     document = xml.dom.minidom.parseString(response_text)
     changeset_id_elements = document.firstChild.childNodes
@@ -76,7 +76,7 @@ def get_commit_details(id):
                                        config['atlassian']['auth_token'])
     response = urllib.request.urlopen(request_url)
     response_text = response.read().decode()
-    logging.debug("Commits for {}".format(id))
+    logging.debug("Commits for %s", id)
     logging.debug(response_text)
     document = xml.dom.minidom.parseString(response_text)
 
