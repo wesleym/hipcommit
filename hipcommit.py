@@ -118,9 +118,9 @@ def poll(last_poll_time, this_poll_time):
             send_room_message(messsage)
 
 def start_polling():
+    last_poll_time = datetime.datetime.utcnow()
     while True:
         try:
-            last_poll_time = datetime.datetime.utcnow()
             this_poll_time = datetime.datetime.utcnow()
             poll(last_poll_time, this_poll_time)
             last_poll_time = this_poll_time
