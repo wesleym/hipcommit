@@ -61,7 +61,7 @@ def get_commit_ids(from_time, to_time):
     document = xml.dom.minidom.parseString(response_text)
     changeset_id_elements = document.firstChild.childNodes
     changeset_ids = [element.firstChild.nodeValue for element in changeset_id_elements]
-    return changeset_ids
+    return sorted(changeset_ids)
 
 def get_commit_details(id):
     """Fetch the details for the specified commit and return a dict of its details.
