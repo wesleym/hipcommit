@@ -42,6 +42,9 @@ def send_room_message(message):
 
 def get_commit_ids(from_time, to_time):
     """Fetch the commits from from_time to to_time and return a list of changeset IDs."""
+    # Overlap previous fetch interval by thirty seconds
+    from_time = from_time - datetime.timedelta(seconds=30)
+
     logging.info("Fetching commits from {} to {}".format(from_time, to_time))
 
     encoded_from_time = urllib.parse.quote(str(from_time))
