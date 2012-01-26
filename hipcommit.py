@@ -94,10 +94,12 @@ def format_commit_message(changeset_id, author, comment):
     project = config['atlassian']['project']
     return commit_message_template.format(project=project, changeset_id=changeset_id, author=author, comment=comment)
 
-def poll(last_poll_time, this_poll_time):
+def poll(last_poll_time, this_poll_time, oldmemo, memo):
     # Use module-level variable
     global last_broken_build
     for id in get_commit_ids(last_poll_time, this_poll_time):
+        memo.append(id)
+        if id in oldmemo: continue
         details = get_commit_details(id)
         message = format_commit_message(details['changeset_id'], details['author'], details['comment'])
         send_room_message(message)
@@ -124,10 +126,15 @@ def poll(last_poll_time, this_poll_time):
 
 def start_polling():
     last_poll_time = datetime.datetime.utcnow()
+    last_broken_build = None
+    oldmemo = []
+    memo = []
     while True:
         try:
             this_poll_time = datetime.datetime.utcnow()
-            poll(last_poll_time, this_poll_time)
+            poll(last_poll_time, this_poll_time, oldmemo, memo)
+            oldmemo = memo
+            memo = []
             last_poll_time = this_poll_time
         except urllib.error.URLError as error:
             logging.error(error)
