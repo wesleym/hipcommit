@@ -7,6 +7,7 @@ import logging
 import xml.dom.minidom
 import urllib.request
 import urllib.parse
+import requests
 
 logging.basicConfig(filename='hipcommit.log', level=logging.DEBUG)
 console = logging.StreamHandler()
@@ -18,8 +19,7 @@ config.read('config.ini')
 
 last_poll_time = datetime.datetime.utcnow()
 
-message_url = ('https://api.hipchat.com/v1/rooms/message'
-               '?auth_token={}&room_id={}&from={}&message={}')
+message_url = 'https://api.hipchat.com/v1/rooms/message'
 changeset_list_url = 'https://{}/source/rest-service-fe/revisionData-v1/changesetList/EXTGWT?FEAUTH={}&path=%2F&start={}&end={}&maxReturn=10'
 changeset_url = 'https://{}/source/rest-service-fe/revisionData-v1/changeset/EXTGWT/{}?FEAUTH={}'
 
@@ -33,12 +33,11 @@ def send_room_message(message):
     """Send a notification message to the predetermined room on HipChat."""
     logging.info("Sending message to room %s:", config['hipchat']['room_id'])
     logging.info(message)
-    url_encoded_message = urllib.parse.quote(message)
-    request_url = message_url.format(config['hipchat']['notification_token'],
-                                     config['hipchat']['room_id'],
-                                     urllib.parse.quote(config['hipchat']['name']),
-                                     url_encoded_message)
-    urllib.request.urlopen(request_url)
+    parameters = {'auth_token': config['hipchat']['notification_token'],
+                  'room_id': config['hipchat']['room_id'],
+                  'from': config['hipchat']['name'],
+                  'message': message}
+    request = requests.poll(message_url, data=parameters)
 
 def get_commit_ids(from_time, to_time):
     """Fetch the commits from from_time to to_time and return a list of changeset IDs."""
