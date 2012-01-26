@@ -25,7 +25,7 @@ changeset_url = 'https://{}/source/rest-service-fe/revisionData-v1/changeset/EXT
 
 urii = 'https://sencha.jira.com/builds'
 
-template5 = 'https://sencha.jira.com/builds/rest/api/latest/result/EXTGWT?os_authType=basic'
+buildstatus = 'https://sencha.jira.com/builds/rest/api/latest/result/EXTGWT'
 
 last_broken_build = None
 
@@ -103,18 +103,14 @@ def poll(last_poll_time, this_poll_time, oldmemo, memo):
         message = format_commit_message(details['changeset_id'], details['author'], details['comment'])
         send_room_message(message)
 
-    auth_handler = urllib.request.HTTPBasicAuthHandler()
-    auth_handler.add_password('protected-area',
-                              urii,
-                              config['atlassian']['username'],
-                              config['atlassian']['password'])
-    opener = urllib.request.build_opener(auth_handler)
-    bamdoc = opener.open(template5).read().decode()
+    atconfig = config['atlassian']
+    request = requests.get(buildstatus, auth=(atconfig['username'],
+                                            atconfig['password']))
+    bamdoc = request.text
     logging.debug("Bamdoc follows")
     logging.debug(bamdoc)
     bamdoc = xml.dom.minidom.parseString(bamdoc)
     bamstate = bamdoc.firstChild.firstChild.firstChild.attributes['state'].nodeValue
-    bamstate = bamstate
     if bamstate != 'Successful':
         bamkey = bamdoc.firstChild.firstChild.firstChild.attributes['key'].nodeValue
         if bamkey != last_broken_build:
