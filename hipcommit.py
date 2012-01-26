@@ -56,7 +56,7 @@ def get_commit_ids(from_time, to_time):
 
     response = urllib.request.urlopen(request_url)
     response_text = response.read().decode()
-    logging.debug("Commits from %s to %s" from_time, to_time)
+    logging.debug("Commits from %s to %s", from_time, to_time)
     logging.debug(response_text)
     document = xml.dom.minidom.parseString(response_text)
     changeset_id_elements = document.firstChild.childNodes
