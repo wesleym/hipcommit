@@ -92,6 +92,8 @@ def format_commit_message(changeset_id, author, comment):
     return commit_message_template.format(project=project, changeset_id=changeset_id, author=author, comment=comment)
 
 def poll(last_poll_time, this_poll_time):
+    # Use module-level variable
+    global last_broken_build
     for id in get_commit_ids(last_poll_time, this_poll_time):
         details = get_commit_details(id)
         message = format_commit_message(details['changeset_id'], details['author'], details['comment'])
